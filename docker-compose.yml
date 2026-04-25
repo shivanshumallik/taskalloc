@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: taskalloc_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taskalloc_user
+      POSTGRES_PASSWORD: taskalloc_pass
+      POSTGRES_DB: taskalloc_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskalloc_user -d taskalloc_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: taskalloc_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://taskalloc_user:taskalloc_pass@db:5432/taskalloc_db
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+
+volumes:
+  postgres_data:

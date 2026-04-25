@@ -1,0 +1,34 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Environment variables — NEVER commit this
+.env
+
+# pytest cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# VS Code
+.vscode/
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Alembic (keep structure, ignore cache)
+migrations/__pycache__/
+
+# OS files
+.DS_Store
+Thumbs.db
